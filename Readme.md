@@ -7,7 +7,7 @@ application.properties
 
 Optional Parameters 
 
-- --file.uploadFile.dir=/local/file/path/ # absolute path 
+- --file.uploadFile.dir=/local/file/path/ # absolute path. default is uploadDir
 - --spring.servlet.multipart.max-file-size=1024MB # max upload size 
 - --spring.servlet.multipart.max-request-size=1024MB # max download size
 - --server.address=0.0.0.0 # listening ip
