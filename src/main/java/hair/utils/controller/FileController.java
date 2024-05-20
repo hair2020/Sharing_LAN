@@ -23,7 +23,8 @@ public class FileController {
 
     @RequestMapping(value = "/initUploadDir", method = RequestMethod.GET)
     public String initUploadDir(){
-        return fileService.initUploadDir(uploadDir);
+        uploadDir = fileService.initUploadDir(uploadDir);
+        return uploadDir;
     }
 
     @RequestMapping(value = "/getIP", method = RequestMethod.GET)
