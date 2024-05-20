@@ -2,7 +2,7 @@
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-uploadFileDir
+./uploadFileDir/*
 
 ### IntelliJ IDEA ###
 .idea
