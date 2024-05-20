@@ -53,7 +53,7 @@ public class FileServiceImpl implements FileService {
                     if (!inetAddress.isLoopbackAddress() && inetAddress instanceof java.net.Inet4Address) {
                         // 返回非回环地址的 IPv4 地址
                         System.out.println(inetAddress.getHostAddress());
-                        IPAddress += inetAddress.getHostAddress() + "\n";
+                        IPAddress = IPAddress + inetAddress.getHostAddress() + " |";
                     }
                 }
             }
