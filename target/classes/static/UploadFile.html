@@ -5,12 +5,14 @@
     <title>Upload File</title>
 </head>
 <body>
+    <a href="index.html">
+        <h3>Back to home</h3>
+    </a>
     <h2>File Upload</h2>
     <form id="uploadForm" enctype="multipart/form-data">
         <label for="fileInput">Choose a file to upload:</label>
-        <input type="file" id="fileInput" name="file" required>
-        <br>
-        <button type="submit" id="uploadButton">Upload</button>
+        <input type="file" style="display: inline-block;" id="fileInput" name="file" required>
+        <button type="submit" style="display: inline-block;" id="uploadButton">Upload</button>
     </form>
     <div id="result"></div>
 

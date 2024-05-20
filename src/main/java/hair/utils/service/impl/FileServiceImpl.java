@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -81,8 +82,16 @@ public class FileServiceImpl implements FileService {
             return ResponseEntity.status(404).body(Arrays.asList("Directory not found"));
         }
 
-        String[] files = directory.list();
-        return ResponseEntity.ok(Arrays.asList(files));
+        String[] allItems = directory.list();
+        List<String> files = new ArrayList<String>();
+        for (String item : allItems) {
+            // Item is not a folder. Keep it
+            if (!Files.isDirectory(Paths.get(uploadDir, item))) {
+                files.add(item);
+            }
+        }
+
+        return ResponseEntity.ok(files);
     }
 
     public ResponseEntity<byte[]> downloadFile(@RequestParam("filename") String filename,String uploadDir){
