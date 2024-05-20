@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload File</title>
+</head>
+<body>
+    <h2>File Upload</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="fileInput">Choose a file to upload:</label>
+        <input type="file" id="fileInput" name="file" required>
+        <br>
+        <button type="submit" id="uploadButton">Upload</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        // 获取表单元素
+        const uploadForm = document.getElementById('uploadForm');
+
+        // 添加提交事件监听器
+        uploadForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // 防止表单默认提交
+
+            // 获取文件输入元素
+            const fileInput = document.getElementById('fileInput');
+
+            // 创建FormData对象来封装文件数据
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            // 使用AJAX发送文件上传请求
+            fetch('/share/uploadFile', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(result => {
+                // 将上传结果显示在结果显示区域
+                document.getElementById('result').innerText = result;
+            })
+            .catch(error => {
+                // 如果请求失败，显示错误信息
+                document.getElementById('result').innerText = 'Error: ' + error;
+            });
+        });
+    </script>
+
+</body>
+</html>

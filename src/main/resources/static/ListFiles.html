@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List Files</title>
+</head>
+<body>
+    <h2>List Files</h2>
+    <table id="fileList">
+        <thead>
+            <tr>
+                <th>File Name</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+    <script>
+        // 获取文件列表表格的 tbody 元素
+        const fileListTableBody = document.querySelector('#fileList tbody');
+
+        // 使用 fetch 请求后端的 /file/listFiles 路由
+        fetch('/share/listFiles')
+            .then(response => response.json()) // 将响应解析为 JSON
+            .then(data => {
+                // 检查 data 是否是数组
+                if (Array.isArray(data)) {
+                    // 清空表格内容
+                    fileListTableBody.innerHTML = '';
+
+                    // 循环遍历获取到的文件名，并将每个文件名添加到表格中
+                    data.forEach(fileName => {
+                        // 创建表格行
+                        const row = document.createElement('tr');
+
+                        // 创建文件名单元格
+                        const fileNameCell = document.createElement('td');
+
+                        // 创建超链接
+                        const link = document.createElement('a');
+                        link.href = `/share/downloadFile?filename=${encodeURIComponent(fileName)}`;
+                        link.textContent = fileName; // 设置链接文本为文件名
+
+                        // 将链接添加到文件名单元格中
+                        fileNameCell.appendChild(link);
+                        row.appendChild(fileNameCell);
+
+                        // 将行添加到表格中
+                        fileListTableBody.appendChild(row);
+                    });
+                } else {
+                    console.error('Received data is not an array:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching file list:', error);
+            });
+
+    </script>
+</body>
+</html>

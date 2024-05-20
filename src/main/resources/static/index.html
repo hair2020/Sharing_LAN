@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FUCK THE FIREWALL</title>
+</head>
+<body>
+    <div id="ip">
+
+    </div>
+      <div id="utils">
+        <a href="UploadFile.html">
+            <h3>Upload File</h3>
+        </a>
+        <br>
+        <a href="ListFiles.html">
+            <h3>List | Download Files</h3>
+        </a>
+      </div>
+
+    <script>
+    fetch('http://localhost:8123/share/getIP')
+        .then(response => response.text())
+        .then(data => {
+            const h3 = document.createElement('h3');
+
+            h3.textContent = 'server IP：' + data;
+
+            const ipDiv = document.getElementById('ip');
+
+            ipDiv.appendChild(h3);
+        })
+        .catch(error => {
+            console.error('error: ', error);
+        });
+    </script>
+</body>
+</html>
