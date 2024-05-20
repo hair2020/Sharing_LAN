@@ -21,6 +21,11 @@ public class FileController {
     @Resource
     FileService fileService;
 
+    @RequestMapping(value = "/initUploadDir", method = RequestMethod.GET)
+    public String initUploadDir(){
+        return fileService.initUploadDir(uploadDir);
+    }
+
     @RequestMapping(value = "/getIP", method = RequestMethod.GET)
     public String getIP(){
         return fileService.getIP();

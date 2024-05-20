@@ -22,6 +22,16 @@ import java.util.Enumeration;
 @Service
 public class FileServiceImpl implements FileService {
 
+    public String initUploadDir(String uploadDir) {
+        File folder = new File(uploadDir);    
+        
+        if (!folder.exists() && !folder.isDirectory()) {
+            folder.mkdirs();
+            System.out.println("Folder created: " + folder.getAbsolutePath());
+        }
+        return folder.getAbsolutePath();
+    }
+
     public String getIP() {
         String IPAddress = "";
         try {

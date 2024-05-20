@@ -8,6 +8,9 @@
     <div id="ip">
 
     </div>
+    <div id="uploadDir">
+
+    </div>
       <div id="utils">
         <a href="UploadFile.html">
             <h3>Upload File</h3>
@@ -19,6 +22,7 @@
       </div>
 
     <script>
+ 
     fetch('http://localhost:8123/share/getIP')
         .then(response => response.text())
         .then(data => {
@@ -33,6 +37,22 @@
         .catch(error => {
             console.error('error: ', error);
         });
+
+    fetch('http://localhost:8123/share/initUploadDir')
+        .then(response => response.text())
+        .then(data => {
+            const h3 = document.createElement('h3');
+
+            h3.textContent = 'init upLoadDir：' + data;
+
+            const ipDiv = document.getElementById('uploadDir');
+
+            ipDiv.appendChild(h3);
+        })
+        .catch(error => {
+            console.error('error: ', error);
+        });
+
     </script>
 </body>
 </html>

@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface FileService {
 
+    String initUploadDir(String uploadDir);
+
     String getIP();
 
     ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, String uploadDir);
