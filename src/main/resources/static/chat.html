@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>局域网聊天室</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #chat-box {
+            height: 400px;
+            border: 1px solid #ccc;
+            overflow-y: scroll;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        #message-input {
+            width: 70%;
+            padding: 5px;
+        }
+        #send-button {
+            width: 25%;
+            padding: 5px;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .message .sender {
+            font-weight: bold;
+        }
+        .message .time {
+            color: #888;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html">
+        <h3>Back to home</h3>
+    </a>
+    <h1>LAN Chatroom</h1>
+
+    <div id="chat-box"></div>
+    <input type="text" id="message-input" placeholder="">
+    <button id="send-button">send</button>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            const chatBox = $('#chat-box');
+            const messageInput = $('#message-input');
+            const sendButton = $('#send-button');
+            
+            let userName = '';
+            let originalTitle = document.title;
+            let blinkInterval;
+            let isWindowFocused = true;
+
+            function getUsername() {
+                return $.get('/username').then(function(data) {
+                    userName = data;
+                    // console.log("Generated username: " + userName);
+                });
+            }
+
+            function startTitleBlinking() {
+                if (!isWindowFocused && !blinkInterval) {
+                    blinkInterval = setInterval(function() {
+                        document.title = document.title === originalTitle ? "新消息!" : originalTitle;
+                    }, 1000);
+                }
+            }
+
+            function stopTitleBlinking() {
+                if (blinkInterval) {
+                    clearInterval(blinkInterval);
+                    blinkInterval = null;
+                    document.title = originalTitle;
+                }
+            }
+
+            $(window).focus(function() {
+                isWindowFocused = true;
+                stopTitleBlinking();
+            });
+
+            $(window).blur(function() {
+                isWindowFocused = false;
+            });
+
+
+            let stompClient = null;
+
+            function connect() {
+                getUsername();
+                const socket = new SockJS("/ws");
+                stompClient = Stomp.over(socket);
+                stompClient.connect({}, function(frame) {
+                    // console.log("Connected: " + frame);
+                    stompClient.subscribe("/topic/messages", function(messageOutput) {
+                        // console.log("Received message:", messageOutput.body);
+                        const message = JSON.parse(messageOutput.body);
+                        addMessage(message);
+                        if (!isWindowFocused) {
+                            startTitleBlinking();
+                        }
+                    });
+                    loadMessages();
+                }, function(error) {
+                    console.log('STOMP error: ' + error);
+                });
+            }
+
+            function formatTime(dateString) {
+                if (!dateString) return 'No date';
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return 'Invalid date';
+                return date.toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+            }
+
+            function addMessage(message) {
+                const timeString = formatTime(message.timestamp);
+                const messageElement = $('<div class="message">').html(
+                    `<span class="time">${timeString}</span><br>` +
+                    `<span class="sender">${message.sender}</span>: ${message.content}`
+                );
+                chatBox.append(messageElement);
+                chatBox.scrollTop(chatBox[0].scrollHeight);
+            }
+
+            function loadMessages() {
+                $.get('/messages', function(messages) {
+                    // console.log("Received messages:", messages);
+                    chatBox.empty();
+                    messages.forEach(addMessage);
+                }).fail(function() {
+                    console.log("Error loading messages");
+                });
+            }
+
+            function sendMessage() {
+                const content = messageInput.val().trim();
+                if (content && stompClient) {
+                    const message = {
+                        sender : userName,
+                        content : content
+                    };
+                    // console.log("Sending message:", message);
+                    stompClient.send("/app/chat", {}, JSON.stringify(message));
+                    messageInput.val('');
+                }
+            }
+
+            sendButton.click(sendMessage);
+            messageInput.keypress(function(e) {
+                if (e.which === 13) {
+                    sendMessage();
+                }
+            });
+
+            connect();
+        });
+    </script>
+</body>
+</html>
